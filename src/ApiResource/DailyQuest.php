@@ -3,8 +3,13 @@
 namespace App\ApiResource;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\State\DailyQuestStateProvider;
 
-#[ApiResource]
-class DailyQuest {
-
+#[ApiResource(
+    shortName: 'Quest',
+    provider: DailyQuestStateProvider::class,
+)]
+class DailyQuest
+{
+    public function __construct(public int $id) {}
 }
