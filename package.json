@@ -9,7 +9,7 @@
         "@symfony/stimulus-bundle": "file:vendor/symfony/stimulus-bundle/assets",
         "@symfony/ux-react": "file:vendor/symfony/ux-react/assets",
         "@symfony/ux-vue": "file:vendor/symfony/ux-vue/assets",
-        "@symfony/webpack-encore": "^4.0.0",
+        "@symfony/webpack-encore": "^4.7.0",
         "@tailwindcss/forms": "^0.5.3",
         "autoprefixer": "^10.4.13",
         "core-js": "^3.23.0",

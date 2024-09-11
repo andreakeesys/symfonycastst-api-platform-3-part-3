@@ -1,4 +1,7 @@
 # API Platform 3 Part 3: Custom Resources & Operations  🐉
+https://symfonycasts.com/screencast/api-platform-extending/
+
+> walkthrough by @andreakeesys
 
 Well howdy! This repository holds the code and script
 for the [API Platform 3 Part 3](https://symfonycasts.com/screencast/api-platform3-extending) on SymfonyCasts.
