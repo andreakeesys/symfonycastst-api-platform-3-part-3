@@ -2,23 +2,43 @@
 
 namespace App\State;
 
+use ApiPlatform\Doctrine\Common\State\PersistProcessor;
+use ApiPlatform\Doctrine\Common\State\RemoveProcessor;
+use ApiPlatform\Metadata\DeleteOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\UserApi;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class EntityClassDtoStateProcessor implements ProcessorInterface
 {
-    public function __construct(private UserRepository $userRepository) {}
+    public function __construct(
+        private UserRepository $userRepository,
+        #[Autowire(service: PersistProcessor::class)] private ProcessorInterface $persistProcessor,
+        #[Autowire(service: RemoveProcessor::class)] private ProcessorInterface $removeProcessor,
+        private UserPasswordHasherInterface $passwordHasher
+    ) {}
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): void
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
     {
         assert($data instanceof UserApi);
 
         $entity = $this->mapDtoToEntity($data);
 
-        dd($entity);
+        if ($operation instanceof DeleteOperationInterface) {
+            $this->removeProcessor->process($entity, $operation, $uriVariables, $context);
+
+            return null;
+        }
+        
+        $this->persistProcessor->process($entity, $operation, $uriVariables, $context);
+
+        $data->id = $entity->getId();
+
+        return $data;
     }
 
     private function mapDtoToEntity(object $dto): object
@@ -37,7 +57,10 @@ class EntityClassDtoStateProcessor implements ProcessorInterface
 
         $entity->setEmail($dto->email);
         $entity->setUsername($dto->username);
-        $entity->setPassword('TODO properly');
+
+        if ($dto->password) {
+            $entity->setPassword($this->passwordHasher->hashPassword($entity, $dto->password));
+        }
 
         // TODO: handle DragonTreasures
         return $entity;
