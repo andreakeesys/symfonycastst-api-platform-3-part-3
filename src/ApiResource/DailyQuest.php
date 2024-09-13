@@ -7,7 +7,6 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
-use App\Entity\DragonTreasure;
 use App\Enum\DailyQuestStatusEnum;
 use App\State\DailyQuestStateProcessor;
 use App\State\DailyQuestStateProvider;
@@ -20,6 +19,7 @@ use Symfony\Component\Serializer\Annotation\Ignore;
         new Get(),
         new Patch()
     ],
+    paginationItemsPerPage: 10,
     provider: DailyQuestStateProvider::class,
     processor: DailyQuestStateProcessor::class, // Moved outside Patch because there's only one operation with write access
 )]
@@ -36,7 +36,9 @@ class DailyQuest
 
     #[ApiProperty(genId: false)]
     public QuestTreasure $treasure;
-    public function __construct(\DateTimeInterface $day) {
+
+    public function __construct(\DateTimeInterface $day)
+    {
         $this->day = $day;
     }
 
