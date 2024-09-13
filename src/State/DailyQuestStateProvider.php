@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\CollectionOperationInterface;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\DailyQuest;
+use App\ApiResource\QuestTreasure;
 use App\Enum\DailyQuestStatusEnum;
 use App\Repository\DragonTreasureRepository;
 
@@ -42,11 +43,30 @@ class DailyQuestStateProvider implements ProviderInterface
             $quest->difficultyLevel = $i % 10;
             $quest->status = $i % 2 === 0 ? DailyQuestStatusEnum::ACTIVE : DailyQuestStatusEnum::COMPLETED;
             $quest->lastUpdated = new \DateTimeImmutable(sprintf('- %d days', rand(1, 100)));
-            $randomTreasuresKeys = array_rand($treasures, rand(1, 3));
-            $randomTreasures = array_map(fn($key) => $treasures[$key], (array) $randomTreasuresKeys);
-            $quest->treasures = $randomTreasures;
+            $questTreasures = $this->getQuestTreasures($treasures);
+            $quest->treasure = $questTreasures[array_rand($questTreasures)];
+
             $quests[$quest->getDayString()] = $quest;
         }
         return $quests;
+    }
+
+    /**
+     * @param array $treasures
+     * @return array
+     */
+    public function getQuestTreasures(array $treasures): array
+    {
+        $randomTreasuresKeys = array_rand($treasures, rand(1, 3));
+        $randomTreasures = array_map(fn($key) => $treasures[$key], (array)$randomTreasuresKeys);
+        $questTreasures = [];
+        foreach ($randomTreasures as $treasure) {
+            $questTreasures[] = new QuestTreasure(
+                $treasure->getName(),
+                $treasure->getValue(),
+                $treasure->getCoolFactor(),
+            );
+        }
+        return $questTreasures;
     }
 }
