@@ -12,7 +12,6 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use App\Entity\DragonTreasure;
 use App\Entity\User;
 use App\State\EntityClassDtoStateProcessor;
 use App\State\EntityToDtoStateProvider;
@@ -32,7 +31,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
             security: 'is_granted("ROLE_USER_EDIT")',
         ),
         new Delete(),
-   ],
+    ],
     paginationItemsPerPage: 5,
     security: 'is_granted("ROLE_USER")',
     provider: EntityToDtoStateProvider::class,
@@ -59,7 +58,7 @@ class UserApi
     #[NotBlank(groups: ['postValidation'])]
     public ?string $password = null;
 
-    /** @var array<int, DragonTreasure> */
+    /** @var array<int, DragonTreasureApi> */
     #[ApiProperty(writable: false)]
     public array $dragonTreasures = [];
 

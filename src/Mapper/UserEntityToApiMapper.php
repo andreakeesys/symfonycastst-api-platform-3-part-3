@@ -2,13 +2,21 @@
 
 namespace App\Mapper;
 
+use App\ApiResource\DragonTreasureApi;
 use App\ApiResource\UserApi;
+use App\Entity\DragonTreasure;
 use App\Entity\User;
 use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
+use Symfonycasts\MicroMapper\MicroMapperInterface;
 
 #[AsMapper(from: User::class, to: UserApi::class)]
-class UserEntityToApiMapper implements MapperInterface {
+class UserEntityToApiMapper implements MapperInterface
+{
+    public function __construct(
+        private MicroMapperInterface $microMapper
+    ) {}
+
     public function load(object $from, string $toClass, array $context): object
     {
         $entity = $from;
@@ -29,7 +37,11 @@ class UserEntityToApiMapper implements MapperInterface {
         $dto->id = $entity->getId();
         $dto->email = $entity->getEmail();
         $dto->username = $entity->getUsername();
-        $dto->dragonTreasures = $entity->getPublishedDragonTreasures()->toArray();
+        $dto->dragonTreasures = array_map(function (DragonTreasure $dragonTreasure) {
+            return $this->microMapper->map($dragonTreasure, DragonTreasureApi::class, [
+                MicroMapperInterface::MAX_DEPTH => 1,
+            ]);
+        }, $entity->getPublishedDragonTreasures()->getValues());
         $dto->flameThrowingDistance = rand(1, 10);
 
         return $dto;
