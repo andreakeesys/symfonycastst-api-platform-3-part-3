@@ -47,6 +47,7 @@ class DragonTreasureEntityToApiMapper implements MapperInterface
         $dto->shortDescription = $entity->getShortDescription();
         $dto->plunderedAtAgo = $entity->getPlunderedAtAgo();
         $dto->isMine = $this->security->getUser() && ($this->security->getUser() === $entity->getOwner());
+        $dto->isPublished = $entity->getIsPublished();
 
         return $dto;
     }
