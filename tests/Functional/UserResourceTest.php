@@ -51,7 +51,37 @@ class UserResourceTest extends ApiTestCase
                 ],
                 'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
-            ->assertStatus(200);
+            ->assertStatus(200)
+        ;
+    }
+
+    public function testTreasuresCanBeRemoved(): void
+    {
+        $user = UserFactory::createOne();
+        $otherUser = UserFactory::createOne();
+        $dragonTreasure = DragonTreasureFactory::createOne(['owner' => $user]);
+        DragonTreasureFactory::createOne(['owner' => $user]);
+        $dragonTreasure3 = DragonTreasureFactory::createOne(['owner' => $otherUser]);
+
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/users/' . $user->getId(), [
+                'json' => [
+                    'dragonTreasures' => [
+                        '/api/treasures/' . $dragonTreasure->getId(),
+                        '/api/treasures/' . $dragonTreasure3->getId(),
+                    ],
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
+            ])
+            ->dump()
+            ->assertStatus(200)
+            ->get('/api/users/' . $user->getId())
+            ->dump()
+            ->assertJsonMatches('length("dragonTreasures")', 2)
+            ->assertJsonMatches('dragonTreasures[0]', '/api/treasures/' . $dragonTreasure->getId())
+            ->assertJsonMatches('dragonTreasures[1]', '/api/treasures/' . $dragonTreasure3->getId())
+        ;
     }
 
     public function testTreasuresCannotBeStolen(): void
@@ -72,7 +102,8 @@ class UserResourceTest extends ApiTestCase
                 'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->dump()
-            ->assertStatus(422);
+            ->assertStatus(422)
+        ;
     }
 
     public function testUnpublishedTreasuresNotReturned(): void
@@ -86,6 +117,7 @@ class UserResourceTest extends ApiTestCase
         $this->browser()
             ->actingAs(UserFactory::createOne())
             ->get('/api/users/' . $user->getId())
-            ->assertJsonMatches('length("dragonTreasures")', 0);
+            ->assertJsonMatches('length("dragonTreasures")', 0)
+        ;
     }
 }
