@@ -8,7 +8,7 @@ use Symfonycasts\MicroMapper\AsMapper;
 use Symfonycasts\MicroMapper\MapperInterface;
 
 #[AsMapper(from: User::class, to: UserApi::class)]
-class UserEntityToUserApiMapper implements MapperInterface {
+class UserEntityToApiMapper implements MapperInterface {
     public function load(object $from, string $toClass, array $context): object
     {
         $entity = $from;
