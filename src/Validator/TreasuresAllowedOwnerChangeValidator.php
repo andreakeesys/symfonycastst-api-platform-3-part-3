@@ -2,18 +2,13 @@
 
 namespace App\Validator;
 
-use App\Entity\DragonTreasure;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\EntityManagerInterface;
+use App\ApiResource\DragonTreasureApi;
+use App\ApiResource\UserApi;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 class TreasuresAllowedOwnerChangeValidator extends ConstraintValidator
 {
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
-    }
-
     public function validate($value, Constraint $constraint): void
     {
         assert($constraint instanceof TreasuresAllowedOwnerChange);
@@ -22,16 +17,13 @@ class TreasuresAllowedOwnerChangeValidator extends ConstraintValidator
             return;
         }
 
-        // meant to be used above a Collection field
-        assert($value instanceof Collection);
+        assert($value instanceof UserApi);
 
-        $unitOfWork = $this->entityManager->getUnitOfWork();
-        foreach ($value as $dragonTreasure) {
-            assert($dragonTreasure instanceof DragonTreasure);
+        foreach ($value->dragonTreasures as $dragonTreasureApi) {
+            assert($dragonTreasureApi instanceof DragonTreasureApi);
 
-            $originalData = $unitOfWork->getOriginalEntityData($dragonTreasure);
-            $originalOwnerId = $originalData['owner_id'];
-            $newOwnerId = $dragonTreasure->getOwner()->getId();
+            $originalOwnerId = $dragonTreasureApi->owner?->id;
+            $newOwnerId = $value->id;
 
             if (!$originalOwnerId || $originalOwnerId === $newOwnerId) {
                 return;
