@@ -38,6 +38,8 @@ class EntityClassDtoStateProcessor implements ProcessorInterface
 
         $data->id = $entity->getId();
 
+        dump($data);
+
         return $data;
     }
 

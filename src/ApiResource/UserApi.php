@@ -5,6 +5,7 @@ namespace App\ApiResource;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\State\Options;
 use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\DragonTreasure;
 use App\Entity\User;
@@ -23,6 +24,7 @@ use App\State\EntityToDtoStateProvider;
 ])]
 class UserApi
 {
+    #[ApiProperty(readable: false)]
     public ?int $id = null;
 
     public ?string $email = null;
@@ -30,8 +32,12 @@ class UserApi
     public ?string $username = null;
 
     /** The plaintext password when set or changed */
+    #[ApiProperty(readable: false)]
     public ?string $password = null;
 
     /** @var array<int, DragonTreasure> */
     public array $dragonTreasures = [];
+
+    #[ApiProperty(readable: false, writable: false)]
+    public int $flameThrowingDistance = 0;
 }
