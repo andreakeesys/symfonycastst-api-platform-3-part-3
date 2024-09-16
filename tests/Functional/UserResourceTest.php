@@ -74,10 +74,8 @@ class UserResourceTest extends ApiTestCase
                 ],
                 'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
-            ->dump()
             ->assertStatus(200)
             ->get('/api/users/' . $user->getId())
-            ->dump()
             ->assertJsonMatches('length("dragonTreasures")', 2)
             ->assertJsonMatches('dragonTreasures[0]', '/api/treasures/' . $dragonTreasure->getId())
             ->assertJsonMatches('dragonTreasures[1]', '/api/treasures/' . $dragonTreasure3->getId())

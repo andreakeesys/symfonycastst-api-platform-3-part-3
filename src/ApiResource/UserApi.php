@@ -59,7 +59,7 @@ class UserApi
     public ?string $password = null;
 
     /** @var array<int, DragonTreasureApi> */
-    #[ApiProperty(writable: false)]
+    #[ApiProperty()]
     public array $dragonTreasures = [];
 
     #[ApiProperty(writable: false)]
